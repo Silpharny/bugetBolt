@@ -5,17 +5,41 @@ const ContentArea = styled.SafeAreaView`
   flex: 1;
   width: 100%;
   height: 100%;
-  justify-content: flex-end;
+  justify-content: space-between;
+`;
+
+export const Header = styled.View`
+  padding: 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const ButtonBack = styled.Pressable``;
+
+export const AskHeader = styled.Text`
+  font-size: 18px;
+  color: #fff;
+`;
+
+export const HeaderButton = styled.Pressable`
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 8px;
+`;
+
+export const HeaderButtonText = styled.Text`
+  font-size: 16px;
+  font-weight: 600;
 `;
 
 export const Logo = styled.Image`
   width: 190px;
   height: 130px;
   align-self: center;
-  margin-bottom: 130px;
 `;
 
-export const InformationArea = styled.View`
+export const BodyArea = styled.View`
   height: 440px;
   background-color: #fff;
   align-items: center;
@@ -61,6 +85,12 @@ export const Button = styled.Pressable`
   margin-top: 10px;
 
   border: 0.2px solid rgba(00, 00, 00, 0.1);
+`;
+
+export const Ask = styled.Text`
+  font-size: 16px;
+  margin-top: 10px;
+  color: #808080;
 `;
 
 export const ButtonText = styled.Text`

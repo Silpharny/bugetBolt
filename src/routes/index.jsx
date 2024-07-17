@@ -4,7 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 
 export default function Routes() {
   const loading = false;
-  const signed = false;
+  const signed = true;
 
   if (loading) {
     return (
