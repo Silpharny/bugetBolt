@@ -1,4 +1,4 @@
-import react, { useState } from "react";
+import react, { useState, useContext } from "react";
 
 import {
   Header,
@@ -18,18 +18,36 @@ import {
   ButtonBack,
 } from "./styles";
 
+import { ActivityIndicator, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { View } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
 
+import { AuthContext } from "../../../contexts/authContext";
+
 export default function Login() {
+  const { Register, Login, authLoading } = useContext(AuthContext);
+
   const [isLogin, setIsLogin] = useState(true);
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+
+  function LoginUser() {
+    Login(email, password);
+
+    setEmail("");
+    setPassword("");
+    return;
+  }
+  function RegisterUser() {
+    Register(name, email, password);
+    setName("");
+    setEmail("");
+    setPassword("");
+    return;
+  }
 
   return isLogin ? (
     <Container>
@@ -66,10 +84,22 @@ export default function Login() {
           <Input
             value={password}
             onChangeText={(text) => setPassword(text)}
+            secureTextEntry={true}
             placeholder="**********"
           />
-          <Button onPress={() => setIsLogin(false)}>
-            <ButtonText>Entrar</ButtonText>
+          <Button onPress={LoginUser}>
+            {authLoading ? (
+              <View
+                style={{
+                  alignItem: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ActivityIndicator size={40} color="#3530D5" />
+              </View>
+            ) : (
+              <ButtonText>Entrar</ButtonText>
+            )}
           </Button>
           <Ask>Esqueceu a senha?</Ask>
         </SignInView>
@@ -101,13 +131,6 @@ export default function Login() {
 
         <SignInView>
           <Input
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-            }}
-            placeholder="silmiranda@email.com"
-          />
-          <Input
             value={name}
             onChangeText={(text) => {
               setName(text);
@@ -115,12 +138,31 @@ export default function Login() {
             placeholder="silmiranda"
           />
           <Input
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+            }}
+            placeholder="silmiranda@email.com"
+          />
+          <Input
             value={password}
             onChangeText={(text) => setPassword(text)}
+            secureTextEntry={true}
             placeholder="**********"
           />
-          <Button onPress={() => setIsLogin(true)}>
-            <ButtonText>Cadastrar</ButtonText>
+          <Button onPress={RegisterUser}>
+            {authLoading ? (
+              <View
+                style={{
+                  alignItem: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ActivityIndicator size={40} color="#3530D5" />
+              </View>
+            ) : (
+              <ButtonText>Cadastrar</ButtonText>
+            )}
           </Button>
         </SignInView>
       </BodyArea>

@@ -1,4 +1,4 @@
-import react, { useState } from "react";
+import react, { useEffect, useState, useContext } from "react";
 
 import {
   Button,
@@ -6,18 +6,66 @@ import {
   HeaderAreaButtons,
   HeaderView,
   TextButton,
+  BalanceData,
+  BalanceCard,
+  Title,
+  TotalBalance,
 } from "./styles";
 
 import { FontAwesome6 } from "@expo/vector-icons";
 import ModalView from "../../components/ModalView";
 import { Modal } from "react-native";
+import CardInfo from "../../components/CardInfo";
+
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+
+import { AuthContext } from "../../contexts/authContext";
 
 export default function Balance() {
   const [modal, setModal] = useState(false);
   const [isAdd, setIsAdd] = useState(false);
 
-  const [balance, setBalance] = useState("");
+  const [balance, setBalance] = useState(null);
   const [description, setDescription] = useState("");
+
+  const [data, setData] = useState([]);
+
+  const { user, setUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, "balance"),
+      where("uid", "==", user.uid)
+      // orderBy("date", "desc")
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let total = [];
+      let datas = [];
+      snapshot.forEach((i) => {
+        total.push(i.data().balance);
+
+        datas.push(i);
+      });
+      setData(datas);
+
+      let sum = total.reduce((pv, cv) => pv + cv, 0);
+
+      setUser({
+        ...user,
+        total: sum,
+      });
+
+      return user;
+    });
+  }, []);
 
   return (
     <Container>
@@ -37,6 +85,11 @@ export default function Balance() {
             <TextButton>Adicionar despesa</TextButton>
           </Button>
         </HeaderAreaButtons>
+
+        <BalanceData>
+          <Title>Total Gasto</Title>
+          <TotalBalance>R${user.total}</TotalBalance>
+        </BalanceData>
       </HeaderView>
       <Modal animationType="slide" transparent={true} visible={modal}>
         <ModalView
@@ -49,6 +102,13 @@ export default function Balance() {
           setDescription={setDescription}
         />
       </Modal>
+
+      <BalanceCard
+        data={data}
+        renderItem={({ item }) => <CardInfo data={item.data()} />}
+        keyExtractor={(item) => item.id}
+        initialNumToRender={7}
+      />
     </Container>
   );
 }

@@ -12,6 +12,12 @@ import {
 
 import { Feather } from "@expo/vector-icons";
 
+import { collection, doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+
+import react, { useContext } from "react";
+import { AuthContext } from "../../contexts/authContext";
+
 export default function ModalView({
   setModal,
   isAdd,
@@ -21,14 +27,62 @@ export default function ModalView({
   description,
   setDescription,
 }) {
+  const { user } = useContext(AuthContext);
+
+  async function AddBalance() {
+    if (description === "" || balance === null) {
+      alert("Preencha todos os campos!");
+      return;
+    }
+
+    const balanceRef = doc(collection(db, "balance"));
+
+    const data = {
+      uid: user.uid,
+      description: description,
+      balance: +balance,
+      date: new Date(),
+    };
+
+    await setDoc(balanceRef, data);
+
+    setIsAdd(false);
+    setDescription("");
+    setBalance("");
+    setModal(false);
+  }
+
+  async function Addcost() {
+    if (description === "" || balance === null) {
+      alert("Preencha todos os campos!");
+      return;
+    }
+
+    const balanceRef = doc(collection(db, "balance"));
+
+    const data = {
+      uid: user.uid,
+      description: description,
+      balance: -balance,
+      date: new Date(),
+    };
+
+    await setDoc(balanceRef, data);
+
+    setDescription("");
+    setBalance("");
+    setModal(false);
+  }
+
   return isAdd ? (
     <Container>
       <ModalContent>
         <HeaderModal>
           <Close
             onPress={() => {
+              setDescription("");
+              setBalance("");
               setModal(false);
-              setIsAdd(false);
             }}
           >
             <Feather name="x" size={30} color="#000" />
@@ -45,8 +99,9 @@ export default function ModalView({
             value={balance}
             onChangeText={(text) => setBalance(text)}
             placeholder="R$1.200"
+            keyboardType="numeric"
           />
-          <Button>
+          <Button onPress={AddBalance}>
             <ButtonText>Saldo</ButtonText>
           </Button>
         </BodyModal>
@@ -58,6 +113,8 @@ export default function ModalView({
         <HeaderModal>
           <Close
             onPress={() => {
+              setDescription("");
+              setBalance("");
               setModal(false);
             }}
           >
@@ -75,8 +132,9 @@ export default function ModalView({
             value={balance}
             onChangeText={(text) => setBalance(text)}
             placeholder="R$1.200"
+            keyboardType="numeric"
           />
-          <Button>
+          <Button onPress={Addcost}>
             <ButtonText>Despesa</ButtonText>
           </Button>
         </BodyModal>
