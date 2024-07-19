@@ -23,6 +23,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
@@ -39,6 +40,8 @@ export default function Balance() {
   const [data, setData] = useState([]);
 
   const { user, setUser } = useContext(AuthContext);
+
+  const [updateScreen, setUpdateScreen] = useState(false);
 
   useEffect(() => {
     const q = query(
@@ -65,7 +68,7 @@ export default function Balance() {
 
       return user;
     });
-  }, []);
+  }, [updateScreen]);
 
   return (
     <Container>
@@ -105,7 +108,13 @@ export default function Balance() {
 
       <BalanceCard
         data={data}
-        renderItem={({ item }) => <CardInfo data={item.data()} />}
+        renderItem={({ item }) => (
+          <CardInfo
+            data={item}
+            setUpdateScreen={setUpdateScreen}
+            updateScreen={updateScreen}
+          />
+        )}
         keyExtractor={(item) => item.id}
         initialNumToRender={7}
       />
